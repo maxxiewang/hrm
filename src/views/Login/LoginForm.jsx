@@ -1,9 +1,19 @@
 import React, { Component } from 'react'
 import { Form, Input, Button, Row, Col } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
+// 表单自定义验证
+import { validate_password } from '../../utils/validate'
+// API
+import { Login } from '../../api/account'
+
 export default class LoginForm extends Component {
   onFinish = (values) => {
     console.log('Received values of form: ', values)
+    Login(values)
+      .then((response) => {
+        console.log(response)
+      })
+      .catch((error) => {})
   }
   regClick = () => {
     this.props.changeForm('reg')
@@ -33,7 +43,19 @@ export default class LoginForm extends Component {
             </Form.Item>
             <Form.Item
               name="password"
-              rules={[{ required: true, message: '请输入密码!' }]}
+              rules={[
+                { required: true, message: '请输入密码!' },
+                // ({ getFieldValue }) => ({
+                //   validator(_, value) {
+                //     console.log(getFieldValue('username')) // 取密码，也可以取别的
+                //     if (!value || getFieldValue('password') === value) {
+                //       return Promise.resolve()
+                //     }
+                //     return Promise.reject(new Error('密码错误!'))
+                //   },
+                // }),
+                { pattern: validate_password, message: '密码大6位，数字+字母' },
+              ]}
             >
               <Input
                 prefix={<LockOutlined className="site-form-item-icon" />}

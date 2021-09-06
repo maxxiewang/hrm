@@ -9,7 +9,6 @@ export default class login extends Component {
     formType: 'login',
   }
   changeForm = (formType) => {
-    console.log('indexC', formType)
     this.setState({ formType: formType })
   }
   render() {

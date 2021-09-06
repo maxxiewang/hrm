@@ -83,7 +83,7 @@ export default class RegisterForm extends Component {
                 className="login-form-button"
                 block
               >
-                登录
+                注册
               </Button>
             </Form.Item>
           </Form>

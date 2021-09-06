@@ -2,7 +2,7 @@ import axios from 'axios'
 // antd
 import { message } from 'antd'
 // cookies
-import { getToken, getUsername } from './cookies'
+// import { getToken, getUsername } from './cookies'
 //第一步，创建实例
 const service = axios.create({
   baseURL: process.env.REACT_APP_API,
@@ -13,8 +13,8 @@ const service = axios.create({
 service.interceptors.request.use(
   function (config) {
     // 在发送请求之前做些什么 Token, Username
-    config.headers['Token'] = getToken()
-    config.headers['Username'] = getUsername()
+    // config.headers['Token'] = getToken()
+    // config.headers['Username'] = getUsername()
     return config
   },
   function (error) {
