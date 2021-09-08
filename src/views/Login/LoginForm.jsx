@@ -1,24 +1,85 @@
 import React, { Component } from 'react'
-import { Form, Input, Button, Row, Col } from 'antd'
+import { Form, Input, Button, Row, Col, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
+
 // 表单自定义验证
-import { validate_password } from '../../utils/validate'
+import { validate_email } from '../../utils/validate'
 // API
-import { Login } from '../../api/account'
+import { Login, GetCode } from '../../api/account'
 
 export default class LoginForm extends Component {
+  state = {
+    username: '',
+    password: '',
+    codeDisable: true,
+    loadingCode: false,
+    codeText: '获取验证证',
+  }
   onFinish = (values) => {
     console.log('Received values of form: ', values)
     Login(values)
-      .then((response) => {
-        console.log(response)
+      .then((response) => {})
+      .catch((error) => {
+        console.log(error)
       })
-      .catch((error) => {})
   }
+  // 注册与登陆切换
   regClick = () => {
     this.props.changeForm('reg')
   }
+  inputChange = (event) => {
+    const val = event.target.value
+    this.setState({ username: val })
+  }
+  // 发送验证码
+  getCode = () => {
+    if (!this.state.username) {
+      message.warning('用户名不能为空')
+      return
+    }
+    console.log('getCode', this.state)
+    const queryData = {
+      username: this.state.username,
+    }
+    // this.setState({ loadingCode: true, codeDisable: true, codeText: '发送中' })
+    GetCode(queryData)
+      .then((response) => {
+        this.countDown()
+        console.log('res', response)
+      })
+      .catch((error) => {
+        console.log(error)
+        this.setState({
+          loadingCode: false,
+          codeDisable: false,
+          codeText: '重新获取',
+        })
+      })
+  }
+  /* 倒计时函数 */
+  countDown = () => {
+    let sec = 60
+    this.setState({
+      codeDisable: true,
+      codeText: `${sec}S`,
+    })
+    let timer = setInterval(() => {
+      sec--
+      if (sec <= 57) {
+        clearInterval(timer)
+        this.setState({
+          codeDisable: false,
+          codeText: '重新获取',
+        })
+        return
+      }
+      this.setState({ codeText: `${sec}S` })
+    }, 1000)
+  }
+
   render() {
+    const { codeDisable, loadingCode, codeText } = this.state
+    const _this = this
     return (
       <div>
         <div className="form-header">
@@ -34,11 +95,24 @@ export default class LoginForm extends Component {
           >
             <Form.Item
               name="username"
-              rules={[{ required: true, message: '请输入用户名!' }]}
+              rules={[
+                { required: true, message: '请输入用户名!' },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    console.log(getFieldValue('username'))
+                    if (validate_email(value)) {
+                      _this.setState({ codeDisable: false })
+                      return Promise.resolve()
+                    }
+                    return Promise.reject(new Error('邮箱格式不正确!'))
+                  },
+                }),
+              ]}
             >
               <Input
+                onChange={this.inputChange}
                 prefix={<UserOutlined className="site-form-item-icon" />}
-                placeholder="Username"
+                placeholder="Email"
               />
             </Form.Item>
             <Form.Item
@@ -54,7 +128,7 @@ export default class LoginForm extends Component {
                 //     return Promise.reject(new Error('密码错误!'))
                 //   },
                 // }),
-                { pattern: validate_password, message: '密码大6位，数字+字母' },
+                // { pattern: validate_password, message: '密码大6位，数字+字母' },
               ]}
             >
               <Input
@@ -78,11 +152,13 @@ export default class LoginForm extends Component {
                 <Col span={9}>
                   <Button
                     type="danger"
-                    htmlType="submit"
                     className="login-form-button"
                     block
+                    loading={loadingCode}
+                    onClick={this.getCode}
+                    disabled={codeDisable}
                   >
-                    获取验证码
+                    {codeText}
                   </Button>
                 </Col>
               </Row>

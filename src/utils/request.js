@@ -26,6 +26,7 @@ service.interceptors.request.use(
 // 第三步，响应拦截（响应头）
 service.interceptors.response.use(
   function (response) {
+    console.log('reponse', response.data)
     // http状态为200
     // 对响应数据做点什么
     const data = response.data
@@ -34,7 +35,7 @@ service.interceptors.response.use(
       message.info(data.message) // 全局的错误拦截提示
       // 可以针对某些 resCode 值，进行业务逻辑处理
       if (data.resCode === 1023) {
-        alert(11111)
+        console.log('data.resCode === 1023')
       }
       return Promise.reject(response)
     } else {
