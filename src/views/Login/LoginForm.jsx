@@ -1,19 +1,18 @@
 import React, { Component } from 'react'
-import { Form, Input, Button, Row, Col, message } from 'antd'
+import { Form, Input, Button, Row, Col } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 
 // 表单自定义验证
 import { validate_email } from '../../utils/validate'
 // API
-import { Login, GetCode } from '../../api/account'
+import { Login } from '../../api/account'
+import Code from '../../components/code'
 
 export default class LoginForm extends Component {
   state = {
     username: '',
     password: '',
-    codeDisable: true,
-    loadingCode: false,
-    codeText: '获取验证证',
+    codeText: '获取验证码',
   }
   onFinish = (values) => {
     console.log('Received values of form: ', values)
@@ -32,53 +31,33 @@ export default class LoginForm extends Component {
     this.setState({ username: val })
   }
   // 发送验证码
-  getCode = () => {
-    if (!this.state.username) {
-      message.warning('用户名不能为空')
-      return
-    }
-    console.log('getCode', this.state)
-    const queryData = {
-      username: this.state.username,
-    }
-    // this.setState({ loadingCode: true, codeDisable: true, codeText: '发送中' })
-    GetCode(queryData)
-      .then((response) => {
-        this.countDown()
-        console.log('res', response)
-      })
-      .catch((error) => {
-        console.log(error)
-        this.setState({
-          loadingCode: false,
-          codeDisable: false,
-          codeText: '重新获取',
-        })
-      })
-  }
-  /* 倒计时函数 */
-  countDown = () => {
-    let sec = 60
-    this.setState({
-      codeDisable: true,
-      codeText: `${sec}S`,
-    })
-    let timer = setInterval(() => {
-      sec--
-      if (sec <= 57) {
-        clearInterval(timer)
-        this.setState({
-          codeDisable: false,
-          codeText: '重新获取',
-        })
-        return
-      }
-      this.setState({ codeText: `${sec}S` })
-    }, 1000)
-  }
+  // getCode = () => {
+  //   if (!this.state.username) {
+  //     message.warning('用户名不能为空')
+  //     return
+  //   }
+  //   console.log('getCode', this.state)
+  //   const queryData = {
+  //     username: this.state.username,
+  //   }
+  //   // this.setState({ loadingCode: true, codeDisable: true, codeText: '发送中' })
+  //   GetCode(queryData)
+  //     .then((response) => {
+  //       this.countDown()
+  //       console.log('res', response)
+  //     })
+  //     .catch((error) => {
+  //       console.log(error)
+  //       this.setState({
+  //         loadingCode: false,
+  //         codeDisable: false,
+  //         codeText: '重新获取',
+  //       })
+  //     })
+  // }
 
   render() {
-    const { codeDisable, loadingCode, codeText } = this.state
+    const { username } = this.state
     const _this = this
     return (
       <div>
@@ -150,7 +129,7 @@ export default class LoginForm extends Component {
                   />
                 </Col>
                 <Col span={9}>
-                  <Button
+                  {/* <Button
                     type="danger"
                     className="login-form-button"
                     block
@@ -159,7 +138,9 @@ export default class LoginForm extends Component {
                     disabled={codeDisable}
                   >
                     {codeText}
-                  </Button>
+                  </Button> */}
+                  {/* 获取验证码组件 */}
+                  <Code username={username} />
                 </Col>
               </Row>
             </Form.Item>
