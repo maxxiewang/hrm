@@ -12,6 +12,7 @@ export default class LoginForm extends Component {
   state = {
     username: '',
     password: '',
+    codeDisable: true,
     codeText: '获取验证码',
   }
   onFinish = (values) => {
@@ -57,7 +58,7 @@ export default class LoginForm extends Component {
   // }
 
   render() {
-    const { username } = this.state
+    const { username, codeDisable } = this.state
     const _this = this
     return (
       <div>
@@ -78,7 +79,6 @@ export default class LoginForm extends Component {
                 { required: true, message: '请输入用户名!' },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
-                    console.log(getFieldValue('username'))
                     if (validate_email(value)) {
                       _this.setState({ codeDisable: false })
                       return Promise.resolve()
@@ -140,7 +140,7 @@ export default class LoginForm extends Component {
                     {codeText}
                   </Button> */}
                   {/* 获取验证码组件 */}
-                  <Code username={username} />
+                  <Code username={username} codeDisable={codeDisable} />
                 </Col>
               </Row>
             </Form.Item>
