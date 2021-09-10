@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { Button, message } from 'antd'
 import { GetCode } from '../../api/account'
 import { validate_email } from '../../utils/validate'
+// 全局定时器，用于卸载时销毁
+let timer = null
 
 export default class Code extends Component {
   /* 
@@ -23,6 +25,17 @@ export default class Code extends Component {
     state.username = username
     return {}
   }
+  componentWillUnmount() {
+    console.log('componentWillUnmount')
+    timer = null
+    // message.destroy()
+    /* 关于react中切换路由时报以上错误，实际的原因是因为在组件挂载（mounted）之后进行了异步操作，比如ajax请求或者设置了定时器等，而你在callback中进行了setState操作。当你切换路由时，
+    组件已经被卸载（unmounted）了，此时异步操作中callback还在执行，因此setState没有得到值。 */
+    // 倒计时还在set的原因
+    this.setState = (state, callback) => {
+      return
+    }
+  }
 
   // 获取验证码
   getCode = () => {
@@ -43,6 +56,7 @@ export default class Code extends Component {
     GetCode(queryData)
       .then((response) => {
         this.countDown()
+        message.success(response.data.message)
         console.log('res', response)
       })
       .catch((error) => {
@@ -62,9 +76,9 @@ export default class Code extends Component {
       codeDisable: true,
     })
     console.log('codeDisable', this.state.codeDisable)
-    let timer = setInterval(() => {
+    timer = setInterval(() => {
       sec--
-      if (sec <= 57) {
+      if (sec <= 20) {
         clearInterval(timer)
         this.setState({
           codeDisable: false,

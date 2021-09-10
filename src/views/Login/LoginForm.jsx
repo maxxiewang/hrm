@@ -17,8 +17,16 @@ export default class LoginForm extends Component {
   }
   onFinish = (values) => {
     console.log('Received values of form: ', values)
-    Login(values)
-      .then((response) => {})
+    const queryData = {
+      username: values.username,
+      password: values.password,
+      code: values.code,
+    }
+    console.log('queryData', queryData)
+    Login(queryData)
+      .then((response) => {
+        console.log(response.data)
+      })
       .catch((error) => {
         console.log(error)
       })
@@ -31,31 +39,6 @@ export default class LoginForm extends Component {
     const val = event.target.value
     this.setState({ username: val })
   }
-  // 发送验证码
-  // getCode = () => {
-  //   if (!this.state.username) {
-  //     message.warning('用户名不能为空')
-  //     return
-  //   }
-  //   console.log('getCode', this.state)
-  //   const queryData = {
-  //     username: this.state.username,
-  //   }
-  //   // this.setState({ loadingCode: true, codeDisable: true, codeText: '发送中' })
-  //   GetCode(queryData)
-  //     .then((response) => {
-  //       this.countDown()
-  //       console.log('res', response)
-  //     })
-  //     .catch((error) => {
-  //       console.log(error)
-  //       this.setState({
-  //         loadingCode: false,
-  //         codeDisable: false,
-  //         codeText: '重新获取',
-  //       })
-  //     })
-  // }
 
   render() {
     const { username, codeDisable } = this.state
