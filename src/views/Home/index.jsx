@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import ContainerMain from '../../components/containerMain/index'
 import './layout.scss'
 import Aside from './components/Aside'
 import { Layout } from 'antd'
@@ -14,7 +15,10 @@ export default class Home extends Component {
           </Sider>
           <Layout>
             <Header className="layout-header">头部</Header>
-            <Content className="layout-main">内容区</Content>
+            {/* 内容区的ContainerMain包裹在andD的Layout中的Content里，所以渲染都往那里面走 */}
+            <Content className="layout-main">
+              <ContainerMain />
+            </Content>
           </Layout>
         </Layout>
       </div>

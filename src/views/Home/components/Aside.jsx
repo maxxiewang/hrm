@@ -1,14 +1,35 @@
 import React, { Component, Fragment } from 'react'
+import { Link } from 'react-router-dom'
 import './aside.scss'
 import { Menu } from 'antd'
-import {
-  UserOutlined,
-  LaptopOutlined,
-  NotificationOutlined,
-} from '@ant-design/icons'
+import { UserOutlined, SketchOutlined } from '@ant-design/icons'
+// 路由
+import Router from '../../../router/index'
 const { SubMenu } = Menu
 export default class Aside extends Component {
+  // 有子菜单的情况
+  renderSubMenu = (data) => {
+    return (
+      <SubMenu key={data.key} icon={<UserOutlined />} title={data.title}>
+        {data.child &&
+          data.child.map((item) => {
+            return item.child && item.child.length > 0
+              ? this.renderSubMenu(item)
+              : this.renderMenu(item)
+          })}
+      </SubMenu>
+    )
+  }
+  // 无子级菜单
+  renderMenu = (data) => {
+    return (
+      <Menu.Item key={data.key} icon={<SketchOutlined />}>
+        <Link to={data.key}>{data.title}</Link>
+      </Menu.Item>
+    )
+  }
   render() {
+    console.log('router', Router)
     return (
       <Fragment>
         <h1 className="logo">
@@ -21,19 +42,12 @@ export default class Aside extends Component {
           defaultOpenKeys={['sub1']}
           style={{ height: '100%', borderRight: 0 }}
         >
-          <SubMenu key="sub1" icon={<UserOutlined />} title="subnav 1">
-            <Menu.Item key="1">option1</Menu.Item>
-            <Menu.Item key="2">option2</Menu.Item>
-            <Menu.Item key="3">option3</Menu.Item>
-            <Menu.Item key="4">option4</Menu.Item>
-          </SubMenu>
-          <SubMenu key="sub2" icon={<LaptopOutlined />} title="subnav 2">
-            <Menu.Item key="5">option5</Menu.Item>
-            <Menu.Item key="6">option6</Menu.Item>
-          </SubMenu>
-          <SubMenu key="sub3" icon={<NotificationOutlined />} title="subnav 3">
-            <Menu.Item key="9">option9</Menu.Item>
-          </SubMenu>
+          {Router &&
+            Router.map((firstItem) => {
+              return firstItem.child && firstItem.child.length > 0
+                ? this.renderSubMenu(firstItem)
+                : this.renderMenu(firstItem)
+            })}
         </Menu>
       </Fragment>
     )
