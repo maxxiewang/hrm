@@ -1,6 +1,7 @@
 $color: blue;
 $fs12: 12px;
 
+/* 为了做兼容性适配 */
 @mixin webkit($attr, $value) {
   -webkit-#{$attr}: $value;
   -moz-#{$attr}: $value;
