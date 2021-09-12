@@ -29,7 +29,6 @@ export default class Aside extends Component {
     )
   }
   render() {
-    console.log('router', Router)
     return (
       <Fragment>
         <h1 className="logo">

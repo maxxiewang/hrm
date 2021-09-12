@@ -1,13 +1,17 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Switch } from 'react-router-dom'
-// 私有组件方法
+// 导入组件
+import User from '../../views/User'
+// 私有路由
 import PrivateRouter from '../privateRouter/index'
 
 class ContainerMain extends React.Component {
   render() {
     return (
       <div>
-        <h1>内容区。。。。。。。</h1>
+        <Switch>
+          <PrivateRouter exact component={User} path="/index/user/list" />
+        </Switch>
       </div>
     )
   }
