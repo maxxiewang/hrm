@@ -10,6 +10,7 @@ import { Login } from '../../api/account'
 import Code from '../../components/code'
 // 权限
 import { setToken } from '../../utils/session'
+import { setUsername } from '../../utils/cookies'
 
 export default withRouter(
   class LoginForm extends Component {
@@ -30,6 +31,7 @@ export default withRouter(
           const data = response.data.data
           // 储存token
           setToken(data.token)
+          setUsername(queryData.username)
           // 登录成功，路由跳转
           this.props.history.push('./index')
         })
