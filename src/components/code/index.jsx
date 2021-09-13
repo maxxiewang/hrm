@@ -26,7 +26,6 @@ export default class Code extends Component {
     return {}
   }
   componentWillUnmount() {
-    console.log('componentWillUnmount')
     timer = null
     // message.destroy()
     /* 关于react中切换路由时报以上错误，实际的原因是因为在组件挂载（mounted）之后进行了异步操作，比如ajax请求或者设置了定时器等，而你在callback中进行了setState操作。当你切换路由时，
@@ -57,7 +56,6 @@ export default class Code extends Component {
       .then((response) => {
         this.countDown()
         message.success(response.data.message)
-        console.log('res', response)
       })
       .catch((error) => {
         console.log(error)

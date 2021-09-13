@@ -7,34 +7,38 @@ const layout = {
     span: 2,
   },
   wrapperCol: {
-    span: 22,
+    span: 8,
   },
 }
 export default class AddDepartment extends Component {
   state = {
     status: true,
+    loading: false,
   }
   onFinish = (values) => {
-    console.log(values)
+    this.setState({ loading: true })
     Add(values)
       .then((response) => {
         message.success(response.data.message)
+        this.setState({ loading: false })
+        this.refs.form.resetFields()
       })
       .catch((error) => {
         console.log(error)
+        this.setState({ loading: false })
       })
   }
   onChangeRadio = (val) => {
     console.log('radio', val)
   }
   render() {
-    console.log('this.state.status', this.state.status)
     return (
       <Form
+        ref="form"
         {...layout}
         name="control-hooks"
         onFinish={this.onFinish}
-        initialValues={{ status: this.state.status, number: 0 }}
+        initialValues={{ status: this.state.status, number: 1 }}
       >
         <Form.Item
           label="部门名称"
@@ -58,7 +62,7 @@ export default class AddDepartment extends Component {
             },
           ]}
         >
-          <InputNumber />
+          <InputNumber min={1} />
         </Form.Item>
         <Form.Item
           label="是否启用"
@@ -87,8 +91,14 @@ export default class AddDepartment extends Component {
         >
           <Input.TextArea />
         </Form.Item>
-        <Form.Item name="content">
-          <Button type="primary" htmlType="submit">
+        <Form.Item
+          name="content"
+          wrapperCol={{
+            offset: 2,
+            span: 20,
+          }}
+        >
+          <Button loading={this.state.loading} type="primary" htmlType="submit">
             提交
           </Button>
         </Form.Item>

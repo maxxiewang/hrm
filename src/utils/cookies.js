@@ -8,7 +8,6 @@ export function setToken(value) {
   cookies.save(token, value)
 }
 export function getToken() {
-  console.log('getToken', cookies.load(token))
   return sessionStorage.getItem('adminToken')
 }
 

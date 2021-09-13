@@ -6,6 +6,7 @@ body {
 }
 .inline-button {
   button + button {
+    // 找到第一个button再找到同级的下一个button
     margin-left: 10px;
   }
 }
