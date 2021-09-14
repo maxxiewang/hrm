@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Form, Input, Button, InputNumber, Radio, message } from 'antd'
 
-import { Add } from '../../api/department'
+import { Add, Detailed, Edit } from '../../api/department'
 const layout = {
   labelCol: {
     span: 2,
@@ -14,10 +14,53 @@ export default class AddDepartment extends Component {
   state = {
     status: true,
     loading: false,
+    id: '',
+  }
+  static getDerivedStateFromProps(props, state) {
+    if (props.location.state) {
+      state.id = props.location.state.id
+    }
+    return {}
+  }
+
+  componentDidMount() {
+    if (!this.props.location.state) return
+    const data = this.props.location.state
+    Detailed(data)
+      .then((response) => {
+        const talData = response.data.data
+        this.refs.form.setFieldsValue({
+          name: talData.name,
+          number: talData.number,
+          status: talData.status,
+          content: talData.content,
+        })
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   }
   onFinish = (values) => {
     this.setState({ loading: true })
+    this.state.id ? this.updateData(values) : this.addData(values)
+  }
+  // 添加
+  addData = (values) => {
     Add(values)
+      .then((response) => {
+        message.success(response.data.message)
+        this.setState({ loading: false })
+        this.refs.form.resetFields()
+      })
+      .catch((error) => {
+        console.log(error)
+        this.setState({ loading: false })
+      })
+  }
+  // 更新
+  updateData = (values) => {
+    values.id = this.state.id
+    Edit(values)
       .then((response) => {
         message.success(response.data.message)
         this.setState({ loading: false })

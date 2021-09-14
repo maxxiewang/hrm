@@ -1,8 +1,12 @@
 import React, { Component, Fragment } from 'react'
-import { Button, Form, Input, Table, Switch } from 'antd'
-import { GetList, Delete } from '../../api/department'
+import { Link } from 'react-router-dom'
+import { Button, Form, message, Input, Table, Switch, Modal } from 'antd'
+import { GetList, Delete, Status } from '../../api/department'
 export default class Department extends Component {
   state = {
+    visible: false,
+    confirmLoading: false,
+    selectId: '',
     pageNumber: 1,
     pageSize: 10,
     columns: [
@@ -18,6 +22,9 @@ export default class Department extends Component {
               checkedChildren="开启"
               unCheckedChildren="关闭"
               defaultChecked={rowData.status}
+              onChange={(checked) => {
+                this.onSwichSts(rowData, checked)
+              }}
             />
           )
         },
@@ -30,8 +37,22 @@ export default class Department extends Component {
         render: (text, rowData) => {
           return (
             <div className="inline-button">
-              <Button type="text" size="small" shape="round">
-                操作
+              <Button
+                onClick={() => {
+                  this.updateData(rowData.id)
+                }}
+                type="text"
+                size="small"
+                shape="round"
+              >
+                <Link
+                  to={{
+                    pathname: '/index/department/add',
+                    state: { id: rowData.id },
+                  }}
+                >
+                  编辑
+                </Link>
               </Button>
               <Button
                 onClick={() => {
@@ -65,6 +86,8 @@ export default class Department extends Component {
   componentDidMount() {
     this.loadData()
   }
+  // 编辑数据
+  updateData = (id) => {}
   loadData = () => {
     const data = {
       pageNumber: this.state.pageNumber,
@@ -84,21 +107,56 @@ export default class Department extends Component {
         console.log(err)
       })
   }
+  onSwichSts = (data, checked) => {
+    if (!data.id) return
+    const queryData = {
+      id: data.id,
+      status: checked,
+    }
+
+    Status(queryData)
+      .then((response) => {
+        message.success(response.data.message)
+        this.loadData()
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
   // 复选框
   onCheckBox = (val) => {
     this.setState({
       selectedRowKeys: val,
     })
   }
-  delteData = (id) => {
-    Delete(id)
+  // 点击确定删除
+  handleOk = () => {
+    this.setState({
+      confirmLoading: true,
+    })
+    Delete({ id: this.state.id })
       .then((res) => {
-        console.log(res.data)
+        message.success('删除成功')
+        this.loadData()
+        this.setState({
+          visible: false,
+          id: '',
+          confirmLoading: false,
+        })
       })
       .catch((err) => {
         console.log(err)
       })
   }
+
+  delteData(id) {
+    if (!id) return
+    this.setState({
+      visible: true,
+      id: id,
+    })
+  }
+
   render() {
     const rowSelection = {
       onChange: this.onCheckBox,
@@ -126,6 +184,20 @@ export default class Department extends Component {
           dataSource={this.state.data}
           bordered
         ></Table>
+        <Modal
+          title="提示"
+          visible={this.state.visible}
+          onOk={this.handleOk}
+          onCancel={() => {
+            this.setState({
+              visible: false,
+              id: '',
+            })
+          }}
+          confirmLoading={this.state.confirmLoading}
+        >
+          <p>确认删除？</p>
+        </Modal>
       </Fragment>
     )
   }
