@@ -6,7 +6,9 @@ export default class Department extends Component {
   state = {
     visible: false,
     confirmLoading: false,
+    loadingId: '',
     selectId: '',
+    loadingTable: true,
     pageNumber: 1,
     pageSize: 10,
     columns: [
@@ -22,6 +24,7 @@ export default class Department extends Component {
               checkedChildren="开启"
               unCheckedChildren="关闭"
               defaultChecked={rowData.status}
+              loading={rowData.id === this.state.loadingId ? true : false}
               onChange={(checked) => {
                 this.onSwichSts(rowData, checked)
               }}
@@ -75,6 +78,8 @@ export default class Department extends Component {
     selectedRowKeys: [],
   }
   onFinish = (value) => {
+    console.log('this.state.loadingTable', this.state.loadingTable)
+    if (this.state.loadingTable) return
     this.setState({
       keyWord: value.name,
       pageNumber: 1,
@@ -89,6 +94,9 @@ export default class Department extends Component {
   // 编辑数据
   updateData = (id) => {}
   loadData = () => {
+    this.setState({
+      loadingTable: true,
+    })
     const data = {
       pageNumber: this.state.pageNumber,
       pageSize: this.state.pageSize,
@@ -100,6 +108,7 @@ export default class Department extends Component {
         if (resData.data) {
           this.setState({
             data: response.data.data.data,
+            loadingTable: false,
           })
         }
       })
@@ -113,15 +122,24 @@ export default class Department extends Component {
       id: data.id,
       status: checked,
     }
-
-    Status(queryData)
-      .then((response) => {
-        message.success(response.data.message)
-        this.loadData()
-      })
-      .catch((err) => {
-        console.log(err)
-      })
+    this.setState({
+      loadingId: data.id,
+    })
+    setTimeout(() => {
+      Status(queryData)
+        .then((response) => {
+          message.success(response.data.message)
+          this.setState({
+            loadingId: '',
+          })
+        })
+        .catch((err) => {
+          console.log(err)
+          this.setState({
+            loadingId: '',
+          })
+        })
+    }, 3000)
   }
   // 复选框
   onCheckBox = (val) => {
@@ -182,6 +200,7 @@ export default class Department extends Component {
           rowKey="id"
           columns={this.state.columns}
           dataSource={this.state.data}
+          loading={this.state.loadingTable}
           bordered
         ></Table>
         <Modal

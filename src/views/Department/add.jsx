@@ -60,6 +60,7 @@ export default class AddDepartment extends Component {
   // 更新
   updateData = (values) => {
     values.id = this.state.id
+    console.log('values', values)
     Edit(values)
       .then((response) => {
         message.success(response.data.message)
