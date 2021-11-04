@@ -1,6 +1,17 @@
 import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
-import { Button, Form, message, Input, Table, Switch, Modal } from 'antd'
+import {
+  Button,
+  Form,
+  message,
+  Input,
+  Table,
+  Switch,
+  Modal,
+  Tooltip,
+  Icon,
+} from 'antd'
+import { MenuFoldOutlined } from '@ant-design/icons'
 import { GetList, Delete, Status } from '../../api/department'
 export default class Department extends Component {
   state = {
@@ -12,7 +23,19 @@ export default class Department extends Component {
     pageNumber: 1,
     pageSize: 10,
     columns: [
-      { title: '部门名称', dataIndex: 'name', key: 'name' },
+      {
+        title: '部门名称',
+        dataIndex: 'name',
+        key: 'name',
+        filterIcon: (
+          <Tooltip placement="top" title="气泡悬浮提示文本">
+            <Icon type="StarOutlined" style={{ marginLeft: 1 }} />
+          </Tooltip>
+        ),
+        // render: (currentPageData) => {
+        //   console.log('currentPageData', currentPageData)
+        // },
+      },
       {
         title: '状态',
         dataIndex: 'status',
